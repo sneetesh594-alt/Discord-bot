@@ -1,0 +1,74 @@
+# Global defaults for newly seen servers. Existing servers use persisted settings.
+policy:
+  mode: observe                    # observe | enforce; manual commands always execute
+  mod_log_channel_id: null
+  ai_enabled: false
+  block_invites: false
+  banned_phrases:
+    - madarchod
+    - bhenchod
+    - मादरचोद
+    - बहनचोद
+  blocked_domains: []               # e.g. scam.example (hostnames only)
+  exempt_role_ids: []
+  exempt_channel_ids: []
+  spam_window_seconds: 10
+  spam_max_messages: 5             # sixth message triggers
+  duplicate_threshold: 3
+  cross_channel_threshold: 3       # same text in three channels
+  max_mentions: 5                  # users + roles; sixth mention triggers
+  spam_timeout_seconds: 300
+  warning_threshold: 3
+  warning_days: 30
+  warning_timeout_seconds: 600
+
+runtime:
+  retention_days: 30               # includes cases and appeal text, even pending appeals
+  workers: 4
+  queue_size: 500
+  state_max_users: 10000
+  action_cooldown_seconds: 30
+  xp_event_retention_days: 90       # recent leaderboard ledger
+  xp_profile_retention_days: 365    # remove profiles after this much inactivity
+
+ai:
+  requests_per_minute: 30
+  requests_per_day: 1000           # in-memory UTC budget, resets on restart
+  concurrency: 2
+  timeout_seconds: 5
+  cache_ttl_seconds: 300
+  cache_size: 1000
+  sample_rate: 0.1                # plus keyword candidates; 1.0 selects all eligible text
+  review_threshold: 0.7           # routing threshold, not a calibrated probability
+
+# New servers opt into XP with /levels enabled enabled:true.
+# Existing server settings are preserved in SQLite.
+leveling:
+  enabled: false
+  activity_enabled: true          # counts activity while leveling is enabled, even if source XP is off
+  public_leaderboard_channel_id: null  # null = announcement channel, otherwise private
+  text_min_xp: 15
+  text_max_xp: 25
+  text_cooldown_seconds: 60
+  min_characters: 5
+  duplicate_window_seconds: 300
+  text_daily_cap: 5000
+  voice_enabled: false
+  voice_xp_per_minute: 5
+  voice_min_members: 2
+  voice_daily_cap: 600
+  reaction_enabled: false
+  reaction_xp: 2
+  reaction_cooldown_seconds: 60
+  reaction_daily_cap: 50
+  announcements: true
+  announcement_channel_id: null   # null = source channel
+  announce_every: 1
+  ignored_channel_ids: []
+  ignored_role_ids: []
+  reward_roles: {}                # example: {"5": 123456789012345678}
+  stack_rewards: true
+  role_multipliers: {}            # role ID string -> percent, e.g. {"123...": 200}
+  channel_multipliers: {}
+  bonus_percent: 100
+  bonus_until: 0                  # UTC Unix seconds; /levels bonus manages this
