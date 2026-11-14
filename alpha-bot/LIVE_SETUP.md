@@ -1,3 +1,35 @@
+# Current deployment — Alpha 1.3
+
+Verified **14 November 2026, 18:04 IST**: Gateway connected; **33 command roots**, including `/dashboard`, synchronized and independently listed through Discord's API. Fresh heartbeats advance. This is a point-in-time local runtime check, not continuous-uptime proof.
+
+The dashboard serves **http://127.0.0.1:8765**. Its live session endpoint confirms the bot ready, OAuth unconfigured and user unauthenticated. Server data returns 401 and login returns setup-required 503. The operator cannot set the OAuth Client Secret/redirect yet, so real Discord dashboard sign-in and real-server web saves remain pending. [Setup instructions](docs/DASHBOARD.md).
+
+Live SQLite schema v3 passed integrity/foreign-key checks, with original records and current administrator changes retained. No live member XP reset, reward-role change or moderation-mode change was performed for this release. Current record counts can change through administrators; no QA values were inserted into live profiles.
+
+For ongoing local operation, run **Start-Alpha.cmd** in your own window and keep the PC/session awake and online. Stop the known running tool session before launching another instance; the database lock prevents duplicates. The previous tool terminal was unavailable and its heartbeat stale. A tool terminal is not a durable hosting service.
+
+The earlier bot role audit still shows Administrator from the shared BOTS role and Alpha integration role. No role permissions were changed. OAuth permissions/session tests were offline; browser dashboard save tests used isolated synthetic TEST DATA, not these live records.
+
+---
+
+## Historical deployment records
+
+# Current deployment — Alpha 1.3
+
+Verified **14 November 2026, 17:41 IST**: Gateway connected; **33 command roots**, including `/dashboard`, synchronized and independently listed through Discord's API. Fresh heartbeats advance. This is a point-in-time local runtime check, not continuous-uptime proof.
+
+The dashboard serves **http://127.0.0.1:8765**. Its live session endpoint confirms the bot ready, OAuth unconfigured and user unauthenticated. Server data returns 401 and login returns setup-required 503. The operator cannot set the OAuth Client Secret/redirect yet, so real Discord dashboard sign-in and real-server web saves remain pending. [Setup instructions](docs/DASHBOARD.md).
+
+Live SQLite schema v3 passed integrity/foreign-key checks, with **6 cases, 1 XP profile and 20 XP** retained. No live member XP reset, reward-role change or moderation-mode change was performed for this release. The two additional cases since the earlier four-case baseline were existing server configuration actions before this upgrade.
+
+For ongoing local operation, run **Start-Alpha.cmd** in your own window and keep the PC/session awake and online. Stop the known running tool session before launching another instance; the database lock prevents duplicates. The previous tool terminal was unavailable and its heartbeat stale. A tool terminal is not a durable hosting service.
+
+The earlier bot role audit still shows Administrator from the shared BOTS role and Alpha integration role. No role permissions were changed. OAuth permissions/session tests were offline; browser dashboard save tests used isolated synthetic TEST DATA, not these live records.
+
+---
+
+## Historical deployment records
+
 # Current deployment status — 14 November 2026
 
 Alpha **1.2.0 is connected to Discord**, verified **14 November 2026, 12:27 IST** from fresh Gateway-ready logs and advancing health heartbeats. All **32 top-level commands** synchronized successfully and were independently listed through Discord's API. The current runtime is a local supervised Codex terminal session; operational session/PID details are in the private workspace record.

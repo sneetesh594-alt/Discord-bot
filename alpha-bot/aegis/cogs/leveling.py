@@ -220,6 +220,12 @@ class Leveling(commands.Cog):
                 )
                 file = discord.File(io.BytesIO(png), filename="rank-card.png")
                 embed.set_image(url="attachment://rank-card.png")
+            except (OSError, ValueError, RuntimeError) as error:
+                self.service.metrics["card_render_errors"] += 1
+                log.error("Rank image render failed (%s)", type(error).__name__)
+                embed.set_footer(
+                    text="Rank image unavailable; your XP and placement are shown above."
+                )
             finally:
                 self.service.cards_active -= 1
         if file:
@@ -565,7 +571,15 @@ class Leveling(commands.Cog):
                 await self.repo.configure(interaction.guild_id, **changes)
         except ValueError as error:
             raise UserError(str(error)) from None
-        self.service.clear_voice(interaction.guild_id)
+        if set(changes) & {
+            "enabled",
+            "activity_enabled",
+            "voice_enabled",
+            "voice_min_members",
+            "ignored_role_ids",
+            "ignored_channel_ids",
+        }:
+            self.service.clear_voice(interaction.guild_id)
         case_id = await self.bot.store.create_case(
             guild_id=interaction.guild_id,
             user_id=interaction.user.id,

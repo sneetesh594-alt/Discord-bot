@@ -99,7 +99,7 @@ async def test_health_file_distinguishes_connection_processing_and_stopped_state
         await asyncio.gather(*(bot.write_health() for _ in range(5)))
         path = settings.database_path.with_suffix(".health.json")
         result = json.loads(path.read_text())
-        assert result["version"] == "1.2.0"
+        assert result["version"] == "1.3.1"
         assert result["commands_synced"] is True
         assert result["gateway_connected"] is False  # No Gateway connection in this test.
         assert result["last_message_processed_at"] == 1234.5

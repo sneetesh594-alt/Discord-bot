@@ -1,8 +1,10 @@
-# Aegis Discord Moderation Bot
+# Alpha Discord Bot
 
 A working Python bot built from the supplied Atom-like moderation blueprint. It includes slash commands, persistent warnings/cases/appeals, rolling-window spam checks, English/Hindi/Hinglish phrase rules, and optional OpenAI moderation signals.
 
 **Version 1.2 implements the reviewed Atom-style command flow:** separate XP, text, voice and reaction leaderboards, Given/Received selection, pagination, statistics, placement, voice-session status, Unicode rank cards and audited XP/level administration. It also fixes warning escalation, stale rank role writes, concurrent settings updates, voice interval resets and overlapping moderation checks. See [leveling commands](docs/LEVELING.md), [upgrade and recovery](docs/UPGRADE-1.2.md), and [validation](VALIDATION.md).
+
+**Version 1.3.1 includes Alpha Control Room:** a local Discord-login dashboard with server selection, real settings saves, activity boards, rank previews, rewards, exclusions, multipliers, announcements and moderation controls. It fixes private-board action forwarding, rank-image failure fallback and unnecessary voice timer resets. 207 tests pass with no test warnings. Use `Setup-OAuth.cmd` for the hidden local credential prompt. Start with `Start-Alpha.cmd` and read [dashboard setup](docs/DASHBOARD.md). Real Discord sign-in needs an OAuth Client Secret and the registered callback; without them the dashboard stays in locked setup mode.
 
 **New servers start in observe mode.** Automatic local checks record cases without deleting messages or timing out members. Moderators can enable enforcement after reviewing results. Manual moderation commands execute in either mode. AI signals always require human review.
 
@@ -71,6 +73,7 @@ All commands run in servers. Moderation and personal views reply privately. Lead
 |---|---|---|
 | `/ping`, `/help [command]`, `/rules`, `/privacy` | Health, help, and transparency | Everyone |
 | `/rank`, `/statistics`, `/xp_needed`, `/time`, `/placement` | Progress and activity views | Everyone |
+| `/dashboard` | Open the local Discord-login server dashboard | Manage Server |
 | `/leaderboard xp/text/voice/reaction` | Four rankings with period selection and pagination | Everyone |
 | `/manage xp add/subtract/set`, `/manage level set/reset` | Audited progression changes; set/reset require confirmation | Manage Server + Manage Roles |
 | `/config leveling ...`, `/levels ...` | Shared leveling settings and compatibility entry | Manage Server; role-affecting operations also require Manage Roles |

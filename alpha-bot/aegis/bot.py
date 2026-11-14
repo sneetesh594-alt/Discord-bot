@@ -16,6 +16,7 @@ from discord.ext import commands
 from aegis import __version__
 from aegis.ai import AIClassifier
 from aegis.config import Settings
+from aegis.dashboard import Dashboard
 from aegis.level_store import LevelRepository
 from aegis.leveling import LevelingService
 from aegis.security import UserError
@@ -29,6 +30,8 @@ EXTENSIONS = ("utility", "moderation", "admin", "leveling", "automod")
 class CommandTree(app_commands.CommandTree):
     async def on_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
         original = getattr(error, "original", error)
+        self.client.last_command_error_at = time.time()
+        self.client.service.metrics["command_errors"] += 1
         if isinstance(original, UserError):
             message = str(original)
         elif isinstance(original, app_commands.MissingPermissions):
@@ -75,6 +78,9 @@ class AegisBot(commands.Bot):
         self.started_at = time.time()
         self.last_ready_at = None
         self.last_processed_at = None
+        self.last_command_at = None
+        self.last_command_error_at = None
+        self.dashboard = None
         self.command_sync_completed = False
         self.health_lock = asyncio.Lock()
         self.store = Store(settings.database_path, settings.policy, settings.runtime.retention_days)
@@ -96,6 +102,9 @@ class AegisBot(commands.Bot):
         )
         for extension in EXTENSIONS:
             await self.load_extension(f"aegis.cogs.{extension}")
+        if self.settings.dashboard.enabled:
+            self.dashboard = Dashboard(self, self.settings.dashboard)
+            await self.dashboard.start()
         if sync:
             if self.settings.dev_guild_id:
                 guild = discord.Object(id=self.settings.dev_guild_id)
@@ -110,6 +119,10 @@ class AegisBot(commands.Bot):
         self.last_ready_at = time.time()
         await self.write_health()
         log.info("Aegis connected as user=%s guilds=%s", self.user.id, len(self.guilds))
+
+    async def on_app_command_completion(self, interaction, command):
+        self.last_command_at = time.time()
+        self.service.metrics["commands_completed"] += 1
 
     async def write_health(self, *, stopped=False):
         cog = self.get_cog("AutoModeration")
@@ -127,6 +140,11 @@ class AegisBot(commands.Bot):
             "queue_dropped": self.service.metrics["queue_dropped"],
             "queue_size": cog.queue.qsize() if cog else 0,
             "commands_synced": self.command_sync_completed,
+            "last_command_at": self.last_command_at,
+            "last_command_error_at": self.last_command_error_at,
+            "commands_completed": self.service.metrics["commands_completed"],
+            "command_errors": self.service.metrics["command_errors"],
+            "dashboard_enabled": self.dashboard is not None,
         }
         path = self.settings.database_path.with_suffix(".health.json")
 
@@ -156,6 +174,8 @@ class AegisBot(commands.Bot):
         log.info("Removed stored guild data guild=%s", guild.id)
 
     async def close(self):
+        if self.dashboard is not None:
+            await self.dashboard.close()
         for extension in list(self.extensions):
             await self.unload_extension(extension)
         await self.classifier.close()

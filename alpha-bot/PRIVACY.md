@@ -30,6 +30,12 @@ XP/activity events default to 90 days and inactive activity profiles to 365 days
 
 Leaderboards can be public in the configured board/announcement channel; other channels default to private and `private:true` forces a private board. Boards and statistics expose member identity plus aggregate activity/XP, including retained former members. Rank cards bundle an open-license Hindi/Latin font. Runtime health files contain process IDs, connection/processing timestamps and counters, with no token or message body.
 
+## Local dashboard in 1.3
+
+The optional dashboard binds to loopback on the bot's PC. Discord OAuth requests identity and a basic server list (`identify guilds`), without email/DM scopes. Access tokens and opaque sessions stay in bounded server memory; they are not stored in browser local storage, the XP database, or logs. Session access expires after at most eight hours, logout or restart. Expired records are discarded on subsequent requests. Session cookies are HTTP-only and SameSite Lax. Settings writes require a valid session, CSRF/origin checks, current server-management permissions and a matching settings revision. Reward settings additionally check role management and hierarchy. Changes create audit metadata in the existing retained cases table.
+
+Authenticated server managers can view aggregate activity, retained rankings, profiles and recent action metadata for the selected server. Member-name lookups are cached in bounded memory for 60 seconds. Avatar bytes/cards are transient. The current local HTTP dashboard is not an internet-facing service. A public deployment needs a separate HTTPS/access design. See [dashboard guide](docs/DASHBOARD.md).
+
 ## Optional external AI processing
 
 AI is off by default. It requires an operator switch/key and an explicit per-server `/config ai enabled:true` setting. When both are enabled, selected messages that pass local checks are sent to OpenAI's Moderation API as text, limited to 4,000 characters. The bot adds no user IDs or conversation history, but the text itself may contain identifiers. The bot does not inspect images, voice, video, or file attachments.

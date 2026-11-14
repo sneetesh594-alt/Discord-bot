@@ -9,6 +9,7 @@ import time
 import discord
 
 from aegis.levels import progress
+from aegis.markdown import escape_markdown
 
 log = logging.getLogger(__name__)
 PERIODS = {
@@ -37,7 +38,7 @@ def score_label(metric, value):
 
 def board_embed(guild_name, metric, period, data):
     embed = discord.Embed(title=f"Alpha · {TITLES[metric]} leaderboard", colour=0x976AF5)
-    lines = [f"**{discord.utils.escape_markdown(guild_name[:90])}** · {PERIODS[period][1]}", ""]
+    lines = [f"**{escape_markdown(guild_name[:90])}** · {PERIODS[period][1]}", ""]
     for row in data["rows"]:
         label = f"**#{row['position']}** · <@{row['user_id']}>"
         if metric == "xp":
@@ -162,6 +163,34 @@ class LeaderboardView(discord.ui.View):
                 self.period,
                 self.page,
             )
+            # The requested action belongs to the private fork. Preserve it rather
+            # than making a member select the same option a second time.
+            action = getattr(interaction, "data", None) or {}
+            component = action.get("custom_id")
+            values = action.get("values", [])
+            if component == self.period_select.custom_id and values and values[0] in PERIODS:
+                own.period, own.page = values[0], 1
+            elif (
+                self.reaction_select
+                and component == self.reaction_select.custom_id
+                and values
+                and values[0] in {"given", "received"}
+            ):
+                own.metric, own.page = values[0], 1
+            elif component == self.next_page.custom_id:
+                own.page += 1
+            elif component == self.previous.custom_id:
+                own.page = max(1, own.page - 1)
+            elif component == self.first.custom_id:
+                own.page = 1
+            elif component == self.last.custom_id and self.data:
+                own.page = self.data["pages"]
+            elif component == self.my_position.custom_id:
+                data = await self.repo.ranking(
+                    self.guild_id, own.metric, PERIODS[own.period][0], user_id=own.owner_id
+                )
+                placement = data["placement"]
+                own.page = (placement["position"] - 1) // 10 + 1 if placement else 1
             own.message = await interaction.followup.send(
                 content="Your own private board; its controls affect only this view.",
                 embed=await own.render(),

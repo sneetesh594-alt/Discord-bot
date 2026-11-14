@@ -38,6 +38,20 @@ class Utility(commands.Cog):
             f"Pong · {self.bot.latency * 1000:.0f} ms", ephemeral=True
         )
 
+    @app_commands.command(description="Open Alpha's Discord-login server dashboard")
+    @app_commands.guild_only()
+    @app_commands.default_permissions(manage_guild=True)
+    @app_commands.checks.has_permissions(manage_guild=True)
+    async def dashboard(self, interaction: discord.Interaction):
+        config = self.bot.settings.dashboard
+        text = (
+            f"Alpha dashboard: {config.origin}\nOpen it on the PC running Alpha. "
+            "Sign in with Discord and select a server you manage."
+            if config.enabled
+            else "The local dashboard is disabled. The operator can start it with Start-Alpha.cmd."
+        )
+        await interaction.response.send_message(text, ephemeral=True)
+
     @app_commands.command(description="See the bot's commands and how to get started")
     @app_commands.guild_only()
     async def help(self, interaction: discord.Interaction, command: str | None = None):
@@ -57,6 +71,7 @@ class Utility(commands.Cog):
             "`/config invites`, `/config phrase`, `/config domain`, "
             "`/config exempt-role`, `/config exempt-channel`, `/config thresholds`, `/status`, "
             "`/levels status`, `/config leveling ...` and `/levels` settings.\n"
+            "`/dashboard` opens the local Discord-login dashboard.\n"
             "**Manage Server + Manage Roles:** `/manage xp add`, `subtract`, `set`; "
             "`/manage level set`, `reset`; `/levels reward`, `/levels sync`. "
             "Setting/resetting progress needs confirmation and a reason.\n\n"

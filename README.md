@@ -1,16 +1,18 @@
 # Alpha Discord Bot
 
-Alpha v1.2 source is in [alpha-bot](alpha-bot/README.md).
+Alpha v1.3.1 source is in [alpha-bot](alpha-bot/README.md).
 
 Includes moderation, persistent cases/appeals, text XP, safe milestone roles,
 Hindi/Latin rank cards, XP/text/voice/reaction leaderboards, activity statistics,
-audited administration, setup scripts, Docker configuration and 183 passing local tests.
+audited administration, local Discord-login dashboard, setup scripts, Docker configuration
+and 207 passing local tests with zero test warnings. Real dashboard OAuth activation requires local setup.
 
 - [Setup and configuration](alpha-bot/README.md)
 - [Leveling commands](alpha-bot/docs/LEVELING.md)
 - [Validation and known limits](alpha-bot/VALIDATION.md)
 - [Blueprints and implementation report](alpha-bot/docs/project)
 - [Privacy](alpha-bot/PRIVACY.md)
+- [Dashboard setup](alpha-bot/docs/DASHBOARD.md)
 
 For Windows setup, open PowerShell in `alpha-bot` and run `scripts/setup.ps1`.
 Supply credentials in a local `.env` using `.env.example`; credentials, runtime

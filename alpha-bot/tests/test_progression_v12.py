@@ -438,6 +438,47 @@ async def test_public_default_is_limited_to_configured_channel(progression, mess
     assert private.followup.send.await_args.kwargs["ephemeral"] is True
 
 
+async def test_other_members_reaction_selection_is_applied_to_their_private_board(
+    progression, message
+):
+    await progression.activity.reaction(1, 100, 11, 10)
+    view = LeaderboardView(progression.activity, 1, "Community", 10, "received")
+    await view.render()
+    context = interaction(message, SimpleNamespace(id=11))
+    context.data = {"custom_id": view.reaction_select.custom_id, "values": ["given"]}
+    context.followup.send.return_value = SimpleNamespace(edit=AsyncMock())
+    assert not await view.interaction_check(context)
+    response = context.followup.send.await_args.kwargs
+    assert response["view"].metric == "given"
+    assert "Reactions given" in response["embed"].title
+    assert view.metric == "received"
+
+
+async def test_text_setting_change_preserves_unaffected_voice_interval(progression, message):
+    progression.voice_sessions[(1, 10)] = (50, 100.0)
+    await Leveling(progression.bot).changed(interaction(message), text_cooldown_seconds=120)
+    assert progression.voice_sessions[(1, 10)] == (50, 100.0)
+
+
+async def test_rank_renderer_failure_still_delivers_the_text_rank(
+    progression, message, monkeypatch
+):
+    context = interaction(message)
+    context.app_permissions = discord.Permissions(attach_files=True)
+    message.author.display_avatar = SimpleNamespace(
+        replace=lambda **kwargs: SimpleNamespace(read=AsyncMock(return_value=b""))
+    )
+
+    def broken_font(*args, **kwargs):
+        raise OSError("Synthetic unavailable font")
+
+    monkeypatch.setattr("aegis.cogs.leveling.rank_card", broken_font)
+    await Leveling.rank.callback(Leveling(progression.bot), context)
+    reply = context.followup.send.await_args.kwargs
+    assert reply["embed"].title and "file" not in reply
+    assert progression.metrics["card_render_errors"] == 1
+
+
 async def test_stalled_voice_observer_does_not_display_or_credit_offline_gap(
     progression, message, monkeypatch
 ):

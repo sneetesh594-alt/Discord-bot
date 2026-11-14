@@ -1,3 +1,29 @@
+# Version 1.3.1 validation — 14 November 2026
+
+**207 tests passed with zero test warnings**, including a full run with `-W error::DeprecationWarning`. Ten additional Markdown/mention checks cover formatting, masked links, bare URLs, Hindi text, backslashes and output limits. Python lint/format and JavaScript syntax checks pass.
+
+The reported warning category was reproduced in discord.py 2.7.1's Markdown helper: Python 3.13 deprecates positional regex count/flags. PyPI still lists 2.7.1 as the latest release when checked. Alpha now uses a small project-owned escaping function at its two call sites, preserving literal formatting and mention neutralization. No global warning filter or installed dependency patch was used. This does not claim that all optional dependency log messages, including unused audio-connection warnings, have disappeared.
+
+OAuth now also binds an S256 PKCE challenge/verifier to the one-use browser state; the mocked callback test verifies the exact challenge/exchange relationship. The `Setup-OAuth.cmd` helper prompts for a secret locally using a hidden input and updates the local environment without printing it. A temporary-file smoke check preserved the fixture token and avoided duplicate secret keys.
+
+The user reports completing Developer Portal setup, but the local `.env` still has no OAuth Client Secret when checked. Real OAuth activation cannot be claimed until that value is supplied locally and a real user completes authorization. Existing dashboard security and browser QA records follow below.
+
+---
+
+# Version 1.3 validation — 14 November 2026
+
+- **197 tests passed** on Windows/Python 3.13.17. This includes 11 dashboard checks and three new regression cases, in addition to the earlier suite. Twenty-six warnings come from discord.py's existing Markdown helper; the new OAuth response warnings were removed.
+- Three issues were reproduced before fixes and passed afterward: a different member's reaction selector was dropped on a private fork, text-only setting edits cleared voice intervals, and a rank renderer error escaped without a text fallback.
+- Dashboard HTTP tests exercised bound/one-use OAuth state, secret-free session responses, expiry/logout, Host/Origin/CSRF checks, cross-guild denial, fresh permissions, role-setting restrictions, input validation, concurrent-command conflicts, audit persistence, ID precision, shared rank/board data, PNG output and guild removal during a save.
+- Browser QA used a separate temporary database and **synthetic Discord identity/server**, labeled TEST DATA. Server selection, saving a 15–25 XP range, seeing the new policy/audit in overview, a rank PNG, reactions-given empty state and a 390-pixel mobile layout were observed. Screenshots are supplied beside the source folder. These actions did not change live member XP or server settings.
+- JavaScript syntax validation passed; Python lint/format checks are recorded with the final package. The current code still uses schema v3; no new schema migration or XP reset is required.
+- **Real Discord OAuth remains pending**: the operator cannot currently register the callback/set the local OAuth Client Secret. Production sign-in, real-server web saves, voice awards and role/announcement delivery are not claimed from mocked/QA tests. Missing OAuth configuration locks server data and writes while showing setup instructions.
+- The previous bot heartbeat was stale and its tool terminal unavailable. A connected flag in an old health file is not evidence of current uptime. Use the operator-owned `Start-Alpha.cmd` for ongoing PC operation; sleeping/closing that session stops service. A tool-terminal restart is only a point-in-time connectivity check.
+
+See [dashboard setup](docs/DASHBOARD.md). Earlier build records below are historical.
+
+---
+
 # Version 1.2 validation — 14 November 2026
 
 Current local release: **1.2.0**, Windows, Python 3.13.17, discord.py 2.7.1, Pillow 12.3.0.

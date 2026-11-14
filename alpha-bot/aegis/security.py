@@ -5,6 +5,8 @@ from __future__ import annotations
 import discord
 from discord import app_commands
 
+from aegis.markdown import escape_markdown
+
 PERMISSIONS = {
     "warn": "manage_messages",
     "timeout": "moderate_members",
@@ -94,4 +96,4 @@ def private_log_channel(channel: discord.TextChannel) -> bool:
 
 
 def clean(text: str, limit: int = 1000) -> str:
-    return discord.utils.escape_markdown(discord.utils.escape_mentions(text))[:limit]
+    return escape_markdown(discord.utils.escape_mentions(text))[:limit]

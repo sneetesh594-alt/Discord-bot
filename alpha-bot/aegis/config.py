@@ -11,6 +11,7 @@ from typing import Any, TypeVar
 import yaml
 from dotenv import load_dotenv
 
+from aegis.dashboard_config import DashboardConfig
 from aegis.leveling_config import LevelingConfig
 
 
@@ -181,6 +182,7 @@ class Settings:
     dev_guild_id: int | None
     sync_commands: bool
     leveling: LevelingConfig = field(default_factory=LevelingConfig)
+    dashboard: DashboardConfig = field(default_factory=DashboardConfig)
 
     @classmethod
     def load(cls, *, require_token: bool = True) -> Settings:
@@ -237,4 +239,12 @@ class Settings:
             dev_guild_id=env_id("DEV_GUILD_ID"),
             sync_commands=env_bool("SYNC_COMMANDS", True),
             leveling=leveling,
+            dashboard=DashboardConfig(
+                enabled=env_bool("DASHBOARD_ENABLED"),
+                host=os.getenv("DASHBOARD_HOST", "127.0.0.1"),
+                port=int(os.getenv("DASHBOARD_PORT", "8765")),
+                public_url=os.getenv("DASHBOARD_PUBLIC_URL", "http://127.0.0.1:8765"),
+                client_id=env_id("DISCORD_CLIENT_ID"),
+                client_secret=os.getenv("DISCORD_CLIENT_SECRET", "").strip(),
+            ),
         )
